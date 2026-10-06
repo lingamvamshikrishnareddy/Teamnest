@@ -6,3 +6,4 @@ export * from './queries/kpis';
 export * from './queries/approvals';
 export * from './queries/attendance';
 export * from './queries/notifications';
+export * from './queries/payments';

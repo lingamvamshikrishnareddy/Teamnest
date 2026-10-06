@@ -37,7 +37,9 @@ insert into public.roles (code, name, description, rank, requires_mfa, permissio
   ('finance',      'Finance',         'Payments, mandates, invoices, payouts, reimbursements.', 40, true,
    '{"app.web":true,"finance.admin":true,"incentives.approve":true,"sensitive.read":true,"hr.self":true}'),
   ('super_admin',  'Super Admin',     'Configuration, roles, queues, packages, targets.', 50, true,
-   '{"app.web":true,"settings.all":true,"leads.all":true,"audit.read":true,"hr.self":true}');
+   '{"app.web":true,"settings.all":true,"leads.all":true,"audit.read":true,"hr.self":true}')
+on conflict (code) do update set name = excluded.name, description = excluded.description, rank = excluded.rank,
+  requires_mfa = excluded.requires_mfa, permissions = excluded.permissions;
 
 insert into public.territories (id, org_id, parent_id, kind, name, code, state, center_lat, center_lng, pincodes) values
   ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', null, 'zone',   'South & West', 'SW',  null,          null,    null,    '{}'),
@@ -533,13 +535,7 @@ begin
           where dd.id = v_deal
           returning id into v_pay;
 
-          insert into public.receipts (org_id, payment_id, amount, issued_at)
-          select ex.org_id, p.id, p.amount, p.paid_at from public.payments p where p.id = v_pay and p.status = 'success';
-
-          insert into public.invoices (org_id, kind, deal_id, bill_to, subtotal, discount, cgst, sgst, total, issued_at, created_by)
-          select ex.org_id, 'tax', v_deal, i.bill_to, i.subtotal, i.discount, i.cgst, i.sgst, i.total, i.issued_at + interval '3 hours', ex.id
-          from public.invoices i where i.deal_id = v_deal and i.kind = 'proforma'
-            and exists (select 1 from public.payments p where p.id = v_pay and p.status = 'success');
+          -- receipts and tax invoices are issued by the payments_settled trigger
         end if;
       end loop;
 

@@ -9,6 +9,7 @@ Field Sales & Lead Management + Employee HR self-service, delivered as a **mobil
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Monorepo, Supabase schema + RLS, auth + roles, design system | ✅ done |
+| 4 (backend) | Deal closing, GST invoices, payment links, auto-pay mandates, webhooks | ✅ done |
 | 2 | Mobile Home, leads, lead detail, outcomes, call logging | next |
 | 3–7 | See [docs/SPEC.md](docs/SPEC.md) §8 | planned |
 
@@ -58,6 +59,29 @@ Demo logins (password `TeamNest@2026`): `aarav@` Super Admin · `kavya@` HR Admi
 pnpm typecheck && pnpm test          # TS + unit tests (tokens contrast, formatters, i18n, permissions)
 pnpm db:test                         # migrations + seed + 66 RLS/flow assertions
 pnpm --filter @teamnest/web build
+```
+
+## Payments
+
+- **`close_deal(quote, mode)`** (SQL RPC): validates the quote (discount approval, expiry, DNC), then creates the deal and a proforma invoice with the GST split (CGST+SGST within the state, IGST across states).
+- **`payments-create-link`** (Edge Function): creates or reuses a gateway payment link and UPI QR for the amount due, and returns WhatsApp share text.
+- **`mandates-create`** (Edge Function): starts UPI Autopay / e-NACH and returns the customer's authorisation URL.
+- **`payments-webhook`** (Edge Function): verifies the HMAC signature, then calls `apply_payment_event()`. That function is idempotent per event id and handles captures, failures, refunds, mandate activation and rejection, and recurring debits and bounces. Bounces tag the lead *Auto-pay Failed* and notify the owner.
+- Receipts and tax invoices are issued automatically when a payment succeeds. `record_cash_payment()` handles field cash collection.
+- Gateway adapters: `mock` for development (signed webhooks, no network) and `razorpay` for production (`PAYMENT_PROVIDER`).
+
+```bash
+supabase functions deploy payments-create-link mandates-create
+supabase functions deploy payments-webhook --no-verify-jwt
+supabase secrets set PAYMENT_PROVIDER=razorpay RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...
+```
+
+## Demo data
+
+`supabase/seed.sql` holds fictional data for 25 users, 2,000 leads, six weeks of calls, visits and deals, plus HR data. Load it with `supabase db reset` or with the Node seeder:
+
+```bash
+DATABASE_URL=postgresql://... pnpm db:seed          # idempotent; --force reloads; refuses APP_ENV=production
 ```
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data model, security model and design tokens.

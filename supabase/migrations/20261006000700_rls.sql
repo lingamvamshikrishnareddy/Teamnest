@@ -528,7 +528,13 @@ begin
   end if;
   execute 'grant execute on all functions in schema public to authenticated';
   if exists (select 1 from pg_roles where rolname = 'service_role') then
+    -- server-side jobs & Edge Functions (bypass RLS; never shipped to clients)
+    execute 'grant usage on schema public to service_role';
+    execute 'grant all on all tables in schema public to service_role';
+    execute 'grant all on all sequences in schema public to service_role';
     execute 'grant execute on all functions in schema public to service_role';
+    execute 'alter default privileges in schema public grant all on tables to service_role';
+    execute 'alter default privileges in schema public grant all on sequences to service_role';
   end if;
 end $$;
 revoke execute on function public.custom_access_token_hook(jsonb) from authenticated;

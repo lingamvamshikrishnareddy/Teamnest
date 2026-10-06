@@ -350,6 +350,10 @@ begin
   end if;
 
   v_org := coalesce((v_new ->> 'org_id')::uuid, (v_old ->> 'org_id')::uuid);
+  -- when a whole tenant is being deleted (cascade), keep the trail but detach it
+  if v_org is not null and not exists (select 1 from public.organizations o where o.id = v_org) then
+    v_org := null;
+  end if;
   insert into public.audit_logs (org_id, actor_id, actor_role, action, table_name, record_id, old_data, new_data, changed_fields)
   values (
     v_org, auth.uid(), public.auth_role(), lower(tg_op), tg_table_name,

@@ -2412,6 +2412,9 @@ export type Database = {
             rejection_reason: string | null
             created_at: string
             updated_at: string
+            gateway_ref: string | null
+            auth_url: string | null
+            next_debit_date: string | null
           }
           Insert: {
             id?: string
@@ -2429,6 +2432,9 @@ export type Database = {
             rejection_reason?: string | null
             created_at?: string
             updated_at?: string
+            gateway_ref?: string | null
+            auth_url?: string | null
+            next_debit_date?: string | null
           }
           Update: {
             id?: string
@@ -2446,6 +2452,9 @@ export type Database = {
             rejection_reason?: string | null
             created_at?: string
             updated_at?: string
+            gateway_ref?: string | null
+            auth_url?: string | null
+            next_debit_date?: string | null
           }
           Relationships: [
             {
@@ -2942,6 +2951,70 @@ export type Database = {
             },
           ]
         }
+        payment_events: {
+          Row: {
+            id: string
+            org_id: string | null
+            provider: string
+            event_id: string
+            event_type: string
+            payment_id: string | null
+            mandate_id: string | null
+            payload: Json
+            status: string
+            error: string | null
+            received_at: string
+          }
+          Insert: {
+            id?: string
+            org_id?: string | null
+            provider: string
+            event_id: string
+            event_type: string
+            payment_id?: string | null
+            mandate_id?: string | null
+            payload: Json
+            status?: string
+            error?: string | null
+            received_at?: string
+          }
+          Update: {
+            id?: string
+            org_id?: string | null
+            provider?: string
+            event_id?: string
+            event_type?: string
+            payment_id?: string | null
+            mandate_id?: string | null
+            payload?: Json
+            status?: string
+            error?: string | null
+            received_at?: string
+          }
+          Relationships: [
+            {
+              foreignKeyName: "payment_events_mandate_id_fkey"
+              columns: ["mandate_id"]
+              isOneToOne: false
+              referencedRelation: "mandates"
+              referencedColumns: ["id"]
+            },
+            {
+              foreignKeyName: "payment_events_org_id_fkey"
+              columns: ["org_id"]
+              isOneToOne: false
+              referencedRelation: "organizations"
+              referencedColumns: ["id"]
+            },
+            {
+              foreignKeyName: "payment_events_payment_id_fkey"
+              columns: ["payment_id"]
+              isOneToOne: false
+              referencedRelation: "payments"
+              referencedColumns: ["id"]
+            },
+          ]
+        }
         payments: {
           Row: {
             id: string
@@ -2960,6 +3033,11 @@ export type Database = {
             attempt_no: number
             created_at: string
             updated_at: string
+            provider: string
+            link_expires_at: string | null
+            upi_qr: string | null
+            idempotency_key: string | null
+            purpose: string
           }
           Insert: {
             id?: string
@@ -2978,6 +3056,11 @@ export type Database = {
             attempt_no?: number
             created_at?: string
             updated_at?: string
+            provider?: string
+            link_expires_at?: string | null
+            upi_qr?: string | null
+            idempotency_key?: string | null
+            purpose?: string
           }
           Update: {
             id?: string
@@ -2996,6 +3079,11 @@ export type Database = {
             attempt_no?: number
             created_at?: string
             updated_at?: string
+            provider?: string
+            link_expires_at?: string | null
+            upi_qr?: string | null
+            idempotency_key?: string | null
+            purpose?: string
           }
           Relationships: [
             {
@@ -4259,6 +4347,15 @@ export type Database = {
         }
     }
     Functions: {
+        apply_payment_event: {
+          Args: {
+              p_provider: string
+              p_event_id: string
+              p_event_type: string
+              p_payload: Json
+            }
+          Returns: string
+        }
         auth_org_id: {
           Args: Record<PropertyKey, never>
           Returns: string
@@ -4297,11 +4394,26 @@ export type Database = {
             }
           Returns: boolean
         }
+        close_deal: {
+          Args: {
+              p_quote_id: string
+              p_payment_mode: Database["public"]["Enums"]["payment_mode"]
+              p_start_date?: string
+              p_remarks?: string
+            }
+          Returns: Database["public"]["Tables"]["deals"]["Row"]
+        }
         custom_access_token_hook: {
           Args: {
               event: Json
             }
           Returns: Json
+        }
+        deal_amount_due: {
+          Args: {
+              p_deal_id: string
+            }
+          Returns: number
         }
         decide_approval: {
           Args: {
@@ -4335,6 +4447,20 @@ export type Database = {
               uan: string
               annual_ctc: number
               monthly_gross: number
+            }[]
+        }
+        gst_split: {
+          Args: {
+              p_org: string
+              p_customer_state: string
+              p_taxable: number
+              p_gst_pct?: number
+            }
+          Returns: {
+              cgst: number
+              sgst: number
+              igst: number
+              total: number
             }[]
         }
         has_role: {
@@ -4407,6 +4533,14 @@ export type Database = {
               p_queue_id: string
             }
           Returns: Database["public"]["Tables"]["leads"]["Row"][]
+        }
+        record_cash_payment: {
+          Args: {
+              p_deal_id: string
+              p_amount: number
+              p_note?: string
+            }
+          Returns: Database["public"]["Tables"]["payments"]["Row"]
         }
         reports_to_me: {
           Args: {

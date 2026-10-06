@@ -67,3 +67,6 @@ policy = "oneshot"
 
 [analytics]
 enabled = false
+
+[functions.payments-webhook]
+verify_jwt = false
