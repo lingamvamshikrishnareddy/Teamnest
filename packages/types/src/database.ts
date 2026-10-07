@@ -4270,6 +4270,39 @@ export type Database = {
         }
     }
     Views: {
+        lead_timeline: {
+          Row: {
+            lead_id: string | null
+            kind: string | null
+            id: string | null
+            at: string | null
+            user_id: string | null
+            title: string | null
+            detail: string | null
+            meta: Json | null
+          }
+          Insert: {
+            lead_id?: string | null
+            kind?: string | null
+            id?: string | null
+            at?: string | null
+            user_id?: string | null
+            title?: string | null
+            detail?: string | null
+            meta?: Json | null
+          }
+          Update: {
+            lead_id?: string | null
+            kind?: string | null
+            id?: string | null
+            at?: string | null
+            user_id?: string | null
+            title?: string | null
+            detail?: string | null
+            meta?: Json | null
+          }
+          Relationships: []
+        }
         my_approvals_inbox: {
           Row: {
             id: string | null
@@ -4345,8 +4378,446 @@ export type Database = {
           }
           Relationships: []
         }
+        payroll_inputs: {
+          Row: {
+            period_month: string | null
+            user_id: string | null
+            org_id: string | null
+            employee_code: string | null
+            full_name: string | null
+            department: string | null
+            work_city: string | null
+            paid_days: number | null
+            absent_days: number | null
+            leave_days: number | null
+            late_marks: number | null
+            incentives: number | null
+            reimbursements: number | null
+            locked: boolean | null
+          }
+          Insert: {
+            period_month?: string | null
+            user_id?: string | null
+            org_id?: string | null
+            employee_code?: string | null
+            full_name?: string | null
+            department?: string | null
+            work_city?: string | null
+            paid_days?: number | null
+            absent_days?: number | null
+            leave_days?: number | null
+            late_marks?: number | null
+            incentives?: number | null
+            reimbursements?: number | null
+            locked?: boolean | null
+          }
+          Update: {
+            period_month?: string | null
+            user_id?: string | null
+            org_id?: string | null
+            employee_code?: string | null
+            full_name?: string | null
+            department?: string | null
+            work_city?: string | null
+            paid_days?: number | null
+            absent_days?: number | null
+            leave_days?: number | null
+            late_marks?: number | null
+            incentives?: number | null
+            reimbursements?: number | null
+            locked?: boolean | null
+          }
+          Relationships: []
+        }
+        report_attendance: {
+          Row: {
+            org_id: string | null
+            user_id: string | null
+            full_name: string | null
+            employee_code: string | null
+            team_id: string | null
+            period_month: string | null
+            present: number | null
+            half_day: number | null
+            absent: number | null
+            on_leave: number | null
+            late: number | null
+            avg_work_minutes: number | null
+            activity_points: number | null
+          }
+          Insert: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            employee_code?: string | null
+            team_id?: string | null
+            period_month?: string | null
+            present?: number | null
+            half_day?: number | null
+            absent?: number | null
+            on_leave?: number | null
+            late?: number | null
+            avg_work_minutes?: number | null
+            activity_points?: number | null
+          }
+          Update: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            employee_code?: string | null
+            team_id?: string | null
+            period_month?: string | null
+            present?: number | null
+            half_day?: number | null
+            absent?: number | null
+            on_leave?: number | null
+            late?: number | null
+            avg_work_minutes?: number | null
+            activity_points?: number | null
+          }
+          Relationships: []
+        }
+        report_field_visits: {
+          Row: {
+            id: string | null
+            org_id: string | null
+            user_id: string | null
+            full_name: string | null
+            day: string | null
+            check_in_at: string | null
+            check_out_at: string | null
+            business_name: string | null
+            locality: string | null
+            purpose: string | null
+            distance_from_lead_m: number | null
+            within_geofence: boolean | null
+            travel_distance_km: number | null
+          }
+          Insert: {
+            id?: string | null
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            day?: string | null
+            check_in_at?: string | null
+            check_out_at?: string | null
+            business_name?: string | null
+            locality?: string | null
+            purpose?: string | null
+            distance_from_lead_m?: number | null
+            within_geofence?: boolean | null
+            travel_distance_km?: number | null
+          }
+          Update: {
+            id?: string | null
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            day?: string | null
+            check_in_at?: string | null
+            check_out_at?: string | null
+            business_name?: string | null
+            locality?: string | null
+            purpose?: string | null
+            distance_from_lead_m?: number | null
+            within_geofence?: boolean | null
+            travel_distance_km?: number | null
+          }
+          Relationships: []
+        }
+        report_headcount: {
+          Row: {
+            org_id: string | null
+            department: string | null
+            work_city: string | null
+            role: Database["public"]["Enums"]["app_role"] | null
+            status: Database["public"]["Enums"]["user_status"] | null
+            headcount: number | null
+            joined_this_month: number | null
+            exits: number | null
+          }
+          Insert: {
+            org_id?: string | null
+            department?: string | null
+            work_city?: string | null
+            role?: Database["public"]["Enums"]["app_role"] | null
+            status?: Database["public"]["Enums"]["user_status"] | null
+            headcount?: number | null
+            joined_this_month?: number | null
+            exits?: number | null
+          }
+          Update: {
+            org_id?: string | null
+            department?: string | null
+            work_city?: string | null
+            role?: Database["public"]["Enums"]["app_role"] | null
+            status?: Database["public"]["Enums"]["user_status"] | null
+            headcount?: number | null
+            joined_this_month?: number | null
+            exits?: number | null
+          }
+          Relationships: []
+        }
+        report_mandates: {
+          Row: {
+            id: string | null
+            org_id: string | null
+            deal_id: string | null
+            deal_no: string | null
+            business_name: string | null
+            owner_name: string | null
+            provider: string | null
+            umrn: string | null
+            max_amount: number | null
+            frequency: string | null
+            status: Database["public"]["Enums"]["mandate_status"] | null
+            bounce_count: number | null
+            last_bounce_at: string | null
+            rejection_reason: string | null
+            start_date: string | null
+            created_at: string | null
+          }
+          Insert: {
+            id?: string | null
+            org_id?: string | null
+            deal_id?: string | null
+            deal_no?: string | null
+            business_name?: string | null
+            owner_name?: string | null
+            provider?: string | null
+            umrn?: string | null
+            max_amount?: number | null
+            frequency?: string | null
+            status?: Database["public"]["Enums"]["mandate_status"] | null
+            bounce_count?: number | null
+            last_bounce_at?: string | null
+            rejection_reason?: string | null
+            start_date?: string | null
+            created_at?: string | null
+          }
+          Update: {
+            id?: string | null
+            org_id?: string | null
+            deal_id?: string | null
+            deal_no?: string | null
+            business_name?: string | null
+            owner_name?: string | null
+            provider?: string | null
+            umrn?: string | null
+            max_amount?: number | null
+            frequency?: string | null
+            status?: Database["public"]["Enums"]["mandate_status"] | null
+            bounce_count?: number | null
+            last_bounce_at?: string | null
+            rejection_reason?: string | null
+            start_date?: string | null
+            created_at?: string | null
+          }
+          Relationships: []
+        }
+        report_outcomes: {
+          Row: {
+            org_id: string | null
+            user_id: string | null
+            full_name: string | null
+            day: string | null
+            outcome_code: string | null
+            label: string | null
+            total: number | null
+          }
+          Insert: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            day?: string | null
+            outcome_code?: string | null
+            label?: string | null
+            total?: number | null
+          }
+          Update: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            day?: string | null
+            outcome_code?: string | null
+            label?: string | null
+            total?: number | null
+          }
+          Relationships: []
+        }
+        report_payments: {
+          Row: {
+            id: string | null
+            org_id: string | null
+            deal_id: string | null
+            deal_no: string | null
+            owner_id: string | null
+            owner_name: string | null
+            business_name: string | null
+            city: string | null
+            amount: number | null
+            method: Database["public"]["Enums"]["payment_method"] | null
+            status: Database["public"]["Enums"]["payment_status"] | null
+            provider: string | null
+            failure_reason: string | null
+            attempt_no: number | null
+            created_at: string | null
+            paid_at: string | null
+            payment_mode: Database["public"]["Enums"]["payment_mode"] | null
+            receipt_no: string | null
+          }
+          Insert: {
+            id?: string | null
+            org_id?: string | null
+            deal_id?: string | null
+            deal_no?: string | null
+            owner_id?: string | null
+            owner_name?: string | null
+            business_name?: string | null
+            city?: string | null
+            amount?: number | null
+            method?: Database["public"]["Enums"]["payment_method"] | null
+            status?: Database["public"]["Enums"]["payment_status"] | null
+            provider?: string | null
+            failure_reason?: string | null
+            attempt_no?: number | null
+            created_at?: string | null
+            paid_at?: string | null
+            payment_mode?: Database["public"]["Enums"]["payment_mode"] | null
+            receipt_no?: string | null
+          }
+          Update: {
+            id?: string | null
+            org_id?: string | null
+            deal_id?: string | null
+            deal_no?: string | null
+            owner_id?: string | null
+            owner_name?: string | null
+            business_name?: string | null
+            city?: string | null
+            amount?: number | null
+            method?: Database["public"]["Enums"]["payment_method"] | null
+            status?: Database["public"]["Enums"]["payment_status"] | null
+            provider?: string | null
+            failure_reason?: string | null
+            attempt_no?: number | null
+            created_at?: string | null
+            paid_at?: string | null
+            payment_mode?: Database["public"]["Enums"]["payment_mode"] | null
+            receipt_no?: string | null
+          }
+          Relationships: []
+        }
+        report_sales_by_user: {
+          Row: {
+            org_id: string | null
+            user_id: string | null
+            full_name: string | null
+            team_id: string | null
+            team_name: string | null
+            territory_id: string | null
+            period_month: string | null
+            calls: number | null
+            connected_calls: number | null
+            talk_time_sec: number | null
+            visits: number | null
+            distance_km: number | null
+            meetings: number | null
+            outcomes: number | null
+            deals: number | null
+            revenue: number | null
+            collections: number | null
+            autopay_deals: number | null
+            online_payments: number | null
+            activity_points: number | null
+          }
+          Insert: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            team_id?: string | null
+            team_name?: string | null
+            territory_id?: string | null
+            period_month?: string | null
+            calls?: number | null
+            connected_calls?: number | null
+            talk_time_sec?: number | null
+            visits?: number | null
+            distance_km?: number | null
+            meetings?: number | null
+            outcomes?: number | null
+            deals?: number | null
+            revenue?: number | null
+            collections?: number | null
+            autopay_deals?: number | null
+            online_payments?: number | null
+            activity_points?: number | null
+          }
+          Update: {
+            org_id?: string | null
+            user_id?: string | null
+            full_name?: string | null
+            team_id?: string | null
+            team_name?: string | null
+            territory_id?: string | null
+            period_month?: string | null
+            calls?: number | null
+            connected_calls?: number | null
+            talk_time_sec?: number | null
+            visits?: number | null
+            distance_km?: number | null
+            meetings?: number | null
+            outcomes?: number | null
+            deals?: number | null
+            revenue?: number | null
+            collections?: number | null
+            autopay_deals?: number | null
+            online_payments?: number | null
+            activity_points?: number | null
+          }
+          Relationships: []
+        }
+        team_live_locations: {
+          Row: {
+            user_id: string | null
+            full_name: string | null
+            team_id: string | null
+            lat: number | null
+            lng: number | null
+            recorded_at: string | null
+            battery_pct: number | null
+            visits_today: number | null
+          }
+          Insert: {
+            user_id?: string | null
+            full_name?: string | null
+            team_id?: string | null
+            lat?: number | null
+            lng?: number | null
+            recorded_at?: string | null
+            battery_pct?: number | null
+            visits_today?: number | null
+          }
+          Update: {
+            user_id?: string | null
+            full_name?: string | null
+            team_id?: string | null
+            lat?: number | null
+            lng?: number | null
+            recorded_at?: string | null
+            battery_pct?: number | null
+            visits_today?: number | null
+          }
+          Relationships: []
+        }
     }
     Functions: {
+        accrue_leave: {
+          Args: {
+              p_month?: string
+            }
+          Returns: number
+        }
         apply_payment_event: {
           Args: {
               p_provider: string
@@ -4356,6 +4827,14 @@ export type Database = {
             }
           Returns: string
         }
+        assign_leads: {
+          Args: {
+              p_lead_ids: string[]
+              p_to_user: string
+              p_reason?: string
+            }
+          Returns: number
+        }
         auth_org_id: {
           Args: Record<PropertyKey, never>
           Returns: string
@@ -4363,6 +4842,18 @@ export type Database = {
         auth_role: {
           Args: Record<PropertyKey, never>
           Returns: Database["public"]["Enums"]["app_role"]
+        }
+        auto_assign_queue: {
+          Args: {
+              p_queue_id: string
+              p_strategy?: string
+              p_limit?: number
+            }
+          Returns: {
+              user_id: string
+              full_name: string
+              assigned: number
+            }[]
         }
         available_assignees: {
           Args: {
@@ -4373,6 +4864,17 @@ export type Database = {
               user_id: string
               full_name: string
               open_leads: number
+            }[]
+        }
+        calculate_incentives: {
+          Args: {
+              p_month: string
+            }
+          Returns: {
+              user_id: string
+              full_name: string
+              revenue: number
+              amount: number
             }[]
         }
         can_track_location: {
@@ -4432,6 +4934,13 @@ export type Database = {
             }
           Returns: number
         }
+        generate_payslips: {
+          Args: {
+              p_month: string
+              p_publish?: boolean
+            }
+          Returns: number
+        }
         get_employee_sensitive: {
           Args: {
               p_employee_id: string
@@ -4448,6 +4957,13 @@ export type Database = {
               annual_ctc: number
               monthly_gross: number
             }[]
+        }
+        goal_score: {
+          Args: {
+              p_user: string
+              p_cycle: string
+            }
+          Returns: number
         }
         gst_split: {
           Args: {
@@ -4469,6 +4985,14 @@ export type Database = {
             }
           Returns: boolean
         }
+        import_leads: {
+          Args: {
+              p_rows: Json
+              p_options?: Json
+              p_file_id?: string
+            }
+          Returns: Database["public"]["Tables"]["import_batches"]["Row"]
+        }
         is_on_leave: {
           Args: {
               p_user: string
@@ -4486,6 +5010,21 @@ export type Database = {
               p_rules: Json
             }
           Returns: boolean
+        }
+        leave_days: {
+          Args: {
+              p_user: string
+              p_from: string
+              p_to: string
+              p_half_day?: string
+            }
+          Returns: number
+        }
+        lock_attendance_month: {
+          Args: {
+              p_month: string
+            }
+          Returns: undefined
         }
         log_audit_event: {
           Args: {
@@ -4528,6 +5067,17 @@ export type Database = {
             }
           Returns: Database["public"]["Tables"]["attendance"]["Row"]
         }
+        queue_counts: {
+          Args: Record<PropertyKey, never>
+          Returns: {
+              queue_id: string
+              code: string
+              name: string
+              color: string
+              total: number
+              unassigned: number
+            }[]
+        }
         queue_leads: {
           Args: {
               p_queue_id: string
@@ -4541,6 +5091,12 @@ export type Database = {
               p_note?: string
             }
           Returns: Database["public"]["Tables"]["payments"]["Row"]
+        }
+        refresh_auto_goals: {
+          Args: {
+              p_cycle_id?: string
+            }
+          Returns: number
         }
         reports_to_me: {
           Args: {
@@ -4589,6 +5145,12 @@ export type Database = {
               p_default?: Json
             }
           Returns: Json
+        }
+        submit_incentives: {
+          Args: {
+              p_month: string
+            }
+          Returns: number
         }
     }
     Enums: {

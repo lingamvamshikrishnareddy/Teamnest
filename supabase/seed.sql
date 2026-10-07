@@ -381,7 +381,7 @@ create or replace function pg_temp.act_as(p uuid) returns void language sql as
 $$ select set_config('request.jwt.claims', json_build_object('sub', p, 'role', 'authenticated')::text, true) $$;
 
 do $$
-declare r record; v_lr uuid; v_appr uuid; v_mgr uuid;
+declare r record; v_lr uuid; v_appr uuid; v_mgr uuid; v_from date; v_to date;
 begin
   for r in
     select * from (values
@@ -397,9 +397,14 @@ begin
       (10, 'CL', -35, -35, 'Personal errand',          'approve')
     ) as t(n, code, f, tt, reason, action)
   loop
+    -- dates are relative to today; slide past week-offs/holidays so the request is valid
+    v_from := current_date + r.f; v_to := current_date + r.tt;
+    while public.leave_days(pg_temp.uid(r.n), v_from, v_from) = 0 loop
+      v_from := v_from + 1; v_to := v_to + 1;
+    end loop;
     insert into public.leave_requests (org_id, user_id, leave_type_id, from_date, to_date, days, reason, created_at)
     values (pg_temp.org(), pg_temp.uid(r.n), (select id from public.leave_types where code = r.code),
-            current_date + r.f, current_date + r.tt, (r.tt - r.f + 1), r.reason, now() - interval '2 days')
+            v_from, v_to, (v_to - v_from + 1), r.reason, now() - interval '2 days')
     returning id, approval_id into v_lr, v_appr;
 
     if r.action in ('approve', 'reject') then
