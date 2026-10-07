@@ -186,11 +186,19 @@ export const trend = {
   dark: { up: palette.green[400], down: palette.red[400], flat: '#A3AEC2' },
 } as const;
 
-/** Categorical chart series, in order. Distinguishable in both themes. */
-export const chartColors = [
-  palette.blue[600], palette.teal[500], palette.orange[500], palette.violet[500],
-  palette.pink[500], palette.amber[500], palette.sky[500], palette.slate[500],
-] as const;
+/**
+ * Categorical chart series in fixed order (never cycled), per theme.
+ * Validated with the dataviz palette checker: lightness band, chroma floor,
+ * CVD + normal-vision separation of adjacent pairs, and contrast vs surface
+ * (light mode's contrast WARN is met with direct labels + table views).
+ * A 9th series folds into "Other" (textMuted).
+ */
+export const chartPalette = {
+  light: ['#2563EB', '#14B8A6', '#F97316', '#8B5CF6', '#EC4899', '#F59E0B', '#0EA5E9', '#16A34A'],
+  dark: ['#3B76F6', '#0D9488', '#EA580C', '#8B5CF6', '#EC4899', '#D97706', '#0284C7', '#16A34A'],
+} as const;
+/** @deprecated use chartPalette[theme] */
+export const chartColors = chartPalette.light;
 
 // ---------------------------------------------------------------------------
 // Shape, depth, type, motion, layout
@@ -294,6 +302,7 @@ export function cssVariables(name: ThemeName): Record<string, string> {
     vars[`--tn-kpi-${tone}-fg`] = toRgbChannels(v.fg);
     vars[`--tn-kpi-${tone}-icon`] = toRgbChannels(v.icon);
   }
+  chartPalette[name].forEach((c, i) => (vars[`--tn-chart-${i + 1}`] = toRgbChannels(c)));
   vars['--tn-shadow-card'] = shadows[name].card;
   vars['--tn-shadow-raised'] = shadows[name].raised;
   vars['--tn-radius'] = `${radius.md}px`;
