@@ -9,6 +9,8 @@ const ROLES = ['executive', 'team_lead', 'area_manager', 'hr_admin', 'finance', 
 serve(async (req) => {
   if (req.method !== 'POST') throw new HttpError(405, 'POST only');
   const { client, user } = await asUser(req);
+  const { data: allowed } = await client.rpc('check_rate_limit', { p_action: 'invite_user', p_max: 20, p_window_seconds: 60 });
+  if (allowed === false) throw new HttpError(429, 'Too many requests — please wait a minute', 'rate_limited');
   const { data: me } = await client.from('users').select('org_id, role').eq('id', user.id).single();
   if (!me || !['super_admin', 'hr_admin'].includes(me.role)) throw new HttpError(403, 'Only HR or Super Admin can invite users', 'forbidden');
 

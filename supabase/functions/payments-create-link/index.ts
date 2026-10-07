@@ -9,6 +9,8 @@ const LINK_TTL_HOURS = 72;
 serve(async (req) => {
   if (req.method !== 'POST') throw new HttpError(405, 'POST only');
   const { client, user } = await asUser(req);
+  const { data: allowed } = await client.rpc('check_rate_limit', { p_action: 'payment_link', p_max: 10, p_window_seconds: 60 });
+  if (allowed === false) throw new HttpError(429, 'Too many requests — please wait a minute', 'rate_limited');
   const { deal_id } = await req.json().catch(() => ({}));
   if (typeof deal_id !== 'string') throw new HttpError(400, 'deal_id is required', 'bad_request');
 

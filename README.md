@@ -6,12 +6,17 @@ Field Sales & Lead Management + Employee HR self-service, delivered as a **mobil
 
 ## Status
 
-| Phase | Scope | State |
-|---|---|---|
-| 1 | Monorepo, Supabase schema + RLS, auth + roles, design system | ✅ done |
-| 4 (backend) | Deal closing, GST invoices, payment links, auto-pay mandates, webhooks | ✅ done |
-| 2 | Mobile Home, leads, lead detail, outcomes, call logging | next |
-| 3–7 | See [docs/SPEC.md](docs/SPEC.md) §8 | planned |
+All seven phases from the brief are implemented:
+
+| Area | Mobile (Expo) | Web console (Next.js) | Backend (Supabase) |
+|---|---|---|---|
+| Auth & roles | sign-in, encrypted session | sign-in, TOTP MFA for admins | JWT claims hook, RLS everywhere |
+| Leads | list, search, filters, detail, map, timeline, Add Business | server-paged leads, bulk assign, queues rule builder, CSV/XLSX import | assignment (round robin / territory / load), import validation, dedupe |
+| Calls & visits | click-to-call tracking, consent, outcomes, GPS check-in/out | talk-time table, live team map, field-visit report | KPIs, activity points, geofence check |
+| Deals & payments | quote builder, discount approvals, payment link + UPI QR, mandates, cash, PDFs | payments, mandates, invoices (print), payouts | close_deal, GST split, webhook processing, receipts |
+| HR | attendance (GPS/selfie), leave, payslips, documents, goals, requests, policies, ID card | directory, register + lock, leave policy, payroll inputs, performance, policies, helpdesk | leave rules, regularisation, accrual, payslip generation |
+| Integrations | approvals inbox, notifications | unified approvals, dashboards, analytics, 18 reports, settings, audit | incentives → payroll, KPIs → goals, leave → assignment |
+| Platform | offline cache + outbox, push, shift tracking | search, notifications | jobs, retention, rate limits, dispatch |
 
 ## Repo layout
 
@@ -31,7 +36,7 @@ scripts/
   db-test.sh      Migrate + seed + test on any Postgres (no Docker)
   gen-db-types.mjs  Regenerate packages/types/src/database.ts
   local-stack/    Docker-free Supabase-compatible stack (Auth + PostgREST + gateway)
-docs/             SPEC.md (original brief), ARCHITECTURE.md
+docs/             SPEC.md (original brief), ARCHITECTURE.md, OPERATIONS.md (deploy & run)
 ```
 
 ## Quick start
@@ -57,7 +62,7 @@ Demo logins (password `TeamNest@2026`): `aarav@` Super Admin · `kavya@` HR Admi
 
 ```bash
 pnpm typecheck && pnpm test          # TS + unit tests (tokens contrast, formatters, i18n, permissions)
-pnpm db:test                         # migrations + seed + 66 RLS/flow assertions
+pnpm db:test                         # migrations + seed + 140+ RLS / payment / operations / job assertions
 pnpm --filter @teamnest/web build
 ```
 

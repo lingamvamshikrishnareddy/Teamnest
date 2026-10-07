@@ -1,5 +1,3 @@
-'use client';
-
 export interface ExportColumn<T> {
   header: string;
   value: (row: T) => string | number | null | undefined;
@@ -22,10 +20,14 @@ const csvCell = (v: unknown) => {
   return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 };
 
+/** Pure CSV builder (RFC 4180 quoting + formula-injection guard). */
+export function toCsv<T>(rows: T[], columns: ExportColumn<T>[]): string {
+  return [columns.map((c) => csvCell(c.header)).join(','), ...rows.map((r) => columns.map((c) => csvCell(c.value(r))).join(','))].join('\n');
+}
+
 export function exportCsv<T>(rows: T[], columns: ExportColumn<T>[], filename: string) {
-  const lines = [columns.map((c) => csvCell(c.header)).join(','), ...rows.map((r) => columns.map((c) => csvCell(c.value(r))).join(','))];
   // BOM so Excel opens UTF-8 (₹, Hindi, Telugu) correctly
-  download(new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8' }), filename.endsWith('.csv') ? filename : `${filename}.csv`);
+  download(new Blob(['\ufeff' + toCsv(rows, columns)], { type: 'text/csv;charset=utf-8' }), filename.endsWith('.csv') ? filename : `${filename}.csv`);
 }
 
 export async function exportXlsx<T>(rows: T[], columns: ExportColumn<T>[], filename: string) {

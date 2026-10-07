@@ -65,3 +65,26 @@ The KPI pastel tones are blue, teal, orange, violet, pink, green, amber and sky.
 ## Localization
 
 English, Hindi and Telugu dictionaries share the same keys (enforced by a test). Formatting follows Indian conventions: ₹1,23,456, ₹12.5 L, ₹3.25 Cr, DD MMM YYYY, IST.
+
+## Money flow
+
+```
+quote ──(discount > limit)──► approvals inbox ──► approved
+  │
+close_deal() ─► deal + proforma (GST split) ─► payment link / UPI QR · mandate · cash
+                                                  │
+                     gateway ─► payments-webhook (HMAC) ─► apply_payment_event() (idempotent)
+                                                  │
+                     receipt + tax invoice ◄──────┘   KPIs (collections) ◄── trigger
+deals ─► calculate_incentives() ─► submit ─► Finance approves ─► payroll_inputs ─► generate_payslips()
+```
+
+## Offline & sync (mobile)
+
+- The React Query cache persists to AsyncStorage for 24 h, so lists, the lead detail and the home screen open offline. Sensitive queries are never persisted.
+- Calls and outcomes go through an outbox. Each mutation carries a client-generated `client_ref`, and a `(user_id, client_ref)` unique key makes replays idempotent. The outbox flushes on reconnect and at launch.
+- Sessions are stored as AES-encrypted values in AsyncStorage, with the key in the Keychain/Keystore (`LargeSecureStore`).
+
+## Background jobs
+
+`pg_cron` drives SQL jobs, and `pg_net` drives the delivery Edge Functions: reminders, stale tasks, retention, goal refresh, accrual, notification dispatch and storage cleanup. See `docs/OPERATIONS.md`.

@@ -2611,6 +2611,7 @@ export type Database = {
             read_at: string | null
             sent_at: string | null
             created_at: string
+            delivery: Json
           }
           Insert: {
             id?: string
@@ -2625,6 +2626,7 @@ export type Database = {
             read_at?: string | null
             sent_at?: string | null
             created_at?: string
+            delivery?: Json
           }
           Update: {
             id?: string
@@ -2639,6 +2641,7 @@ export type Database = {
             read_at?: string | null
             sent_at?: string | null
             created_at?: string
+            delivery?: Json
           }
           Relationships: [
             {
@@ -3449,6 +3452,24 @@ export type Database = {
               referencedColumns: ["id"]
             },
           ]
+        }
+        rate_limits: {
+          Row: {
+            key: string
+            window_start: string
+            hits: number
+          }
+          Insert: {
+            key: string
+            window_start: string
+            hits: number
+          }
+          Update: {
+            key?: string
+            window_start?: string
+            hits?: number
+          }
+          Relationships: []
         }
         ratings: {
           Row: {
@@ -4896,6 +4917,20 @@ export type Database = {
             }
           Returns: boolean
         }
+        check_rate_limit: {
+          Args: {
+              p_action: string
+              p_max: number
+              p_window_seconds?: number
+            }
+          Returns: boolean
+        }
+        claim_notifications: {
+          Args: {
+              p_limit?: number
+            }
+          Returns: Database["public"]["Tables"]["notifications"]["Row"][]
+        }
         close_deal: {
           Args: {
               p_quote_id: string
@@ -4933,6 +4968,16 @@ export type Database = {
               lng2: number
             }
           Returns: number
+        }
+        expired_files: {
+          Args: {
+              p_limit?: number
+            }
+          Returns: {
+              id: string
+              bucket: string
+              path: string
+            }[]
         }
         generate_payslips: {
           Args: {
@@ -5003,6 +5048,18 @@ export type Database = {
         ist_today: {
           Args: Record<PropertyKey, never>
           Returns: string
+        }
+        job_close_stale_tasks: {
+          Args: Record<PropertyKey, never>
+          Returns: number
+        }
+        job_data_retention: {
+          Args: Record<PropertyKey, never>
+          Returns: Json
+        }
+        job_follow_up_reminders: {
+          Args: Record<PropertyKey, never>
+          Returns: number
         }
         lead_matches_rules: {
           Args: {
