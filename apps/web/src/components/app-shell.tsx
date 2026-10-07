@@ -27,6 +27,17 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) && !t.isContentEditable) {
+        e.preventDefault();
+        document.querySelector<HTMLInputElement>('input[name="q"]')?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const sections = WEB_NAV.map((s) => ({ ...s, items: s.items.filter((i) => canAccess(user.role, i.module)) })).filter(
     (s) => s.items.length,
@@ -109,17 +120,18 @@ export function AppShell({
               className="h-9 w-full rounded-sm border border-border bg-surface-muted pl-9 pr-14 text-sm placeholder:text-text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             />
             <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-border bg-surface px-1.5 text-[10px] font-medium text-text-muted">
-              ⌘K
+              /
             </kbd>
           </form>
           <div className="ml-auto flex items-center gap-1">
-            <Button variant="ghost" size="icon" aria-label={`Notifications, ${unread} unread`} className="relative">
-              <Bell />
+            <Button asChild variant="ghost" size="icon" aria-label={`Notifications, ${unread} unread`} className="relative">
+              <Link href="/notifications"><Bell />
               {unread > 0 && (
                 <span className="absolute right-1.5 top-1.5 flex min-w-4 items-center justify-center rounded-full bg-highlight px-1 text-[10px] font-bold leading-4 text-on-highlight">
                   {unread > 9 ? '9+' : unread}
                 </span>
               )}
+              </Link>
             </Button>
             <ThemeToggle />
             <div className="mx-1 h-6 w-px bg-border" aria-hidden />

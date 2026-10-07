@@ -34,7 +34,14 @@ http
     const upstream = http.request(
       { host: '127.0.0.1', port: route.port, method: req.method, path: req.url.slice(route.prefix.length) || '/', headers },
       (up) => {
-        res.writeHead(up.statusCode ?? 502, { ...up.headers, ...cors });
+        const status = up.statusCode ?? 502;
+        res.writeHead(status, { ...up.headers, ...cors });
+        if (status >= 300 && status !== 304) {
+          // surface failed API calls in dev (ambiguous embeds return 300, RLS denials 401/403, bad filters 400)
+          const chunks = [];
+          up.on('data', (c) => chunks.push(c));
+          up.on('end', () => console.warn(`[${status}] ${req.method} ${req.url} ${Buffer.concat(chunks).toString().slice(0, 300)}`));
+        }
         up.pipe(res);
       },
     );
