@@ -245,7 +245,9 @@ insert into public.app_settings (org_id, key, value, description) values
   (pg_temp.org(), 'tracking_window', '{"before_shift_min":30,"after_shift_min":60}', 'Location tracking allowed only around shift hours'),
   (pg_temp.org(), 'privacy_notice_version', '"2026.1"', 'Current employee privacy notice version'),
   (pg_temp.org(), 'data_retention_days', '{"call_recordings":90,"location_pings":30,"audit_logs":2555,"visit_photos":365}', 'Retention per data type'),
-  (pg_temp.org(), 'mfa_required_roles', '["hr_admin","finance","super_admin"]', 'Roles that must enrol MFA');
+  (pg_temp.org(), 'mfa_required_roles', '["hr_admin","finance","super_admin"]', 'Roles that must enrol MFA'),
+  (pg_temp.org(), 'company_state', '"Telangana"', 'State of the GST registration (decides CGST+SGST vs IGST)'),
+  (pg_temp.org(), 'team_wins', '[{"title":"14 auto-pay deals in one week","by":"Lakshmi Prasad · Hyderabad Beta"},{"title":"Elite 3-year plan for a 6-branch clinic chain","by":"Manoj Gowda · Bengaluru Gamma"},{"title":"Turned a Do-Not-Call into a renewal","by":"Riya Kapoor · Pune Delta"}]', 'Team Wins carousel on the mobile home screen');
 
 insert into public.approval_chains (org_id, type, name, conditions, steps, priority, sla_hours) values
   (pg_temp.org(), 'leave',          'Leave > 3 days', '{"min_value":3.5}', '[{"relation":"manager"},{"role":"hr_admin"}]', 10, 48),

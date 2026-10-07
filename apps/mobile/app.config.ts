@@ -29,6 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#2563EB' },
     permissions: ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION', 'CAMERA', 'CALL_PHONE'],
     edgeToEdgeEnabled: true,
+    config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
   },
   web: { bundler: 'metro', output: 'single' },
   plugins: [
@@ -44,11 +45,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     ['expo-splash-screen', { image: './assets/splash.png', backgroundColor: '#2563EB', imageWidth: 180 }],
+    ['expo-image-picker', { cameraPermission: 'TeamNest uses the camera for punch-in selfies, visit photos and KYC documents.', photosPermission: 'Attach documents and photos from your library.' }],
+    'expo-document-picker',
+    ['expo-notifications', { color: '#2563EB' }],
+    '@react-native-community/datetimepicker',
   ],
   experiments: { typedRoutes: true },
   extra: {
     appEnv: APP_ENV,
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    eas: { projectId: process.env.EAS_PROJECT_ID },
   },
 });

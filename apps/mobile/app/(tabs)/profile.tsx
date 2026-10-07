@@ -1,5 +1,7 @@
-import { Alert, Linking, Pressable, View } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import { Alert, Pressable, Switch, View } from 'react-native';
+import { router } from 'expo-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getConsents, recordConsent } from '@teamnest/api-client';
 import { Building2, ChevronRight, Globe, Landmark, LogOut, Moon, ShieldCheck, Siren, UserRound, UsersRound, type LucideIcon } from 'lucide-react-native';
 import { ROLE_LABELS } from '@teamnest/types';
 import { formatDate, formatPhone, LOCALES } from '@teamnest/ui';
@@ -23,12 +25,15 @@ function Row({ label, value }: { label: string; value?: string | null }) {
 
 function Section({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: React.ReactNode }) {
   const { colors } = useTheme();
+  const requestEdit = () => router.push({ pathname: '/work/requests', params: { type: 'profile_change' } });
   return (
     <Card>
       <View className="mb-1 flex-row items-center gap-2">
         <Icon size={18} color={colors.primaryText} />
         <Text weight="semibold" className="flex-1 text-base">{title}</Text>
-        <Text weight="medium" className="text-xs text-primary-text">Request edit</Text>
+        <Pressable onPress={requestEdit} hitSlop={10} accessibilityRole="button" accessibilityLabel={`Request edit to ${title}`}>
+          <Text weight="medium" className="text-xs text-primary-text">Request edit</Text>
+        </Pressable>
       </View>
       {children}
     </Card>
@@ -47,6 +52,13 @@ export default function Profile() {
     queryKey: ['sensitive', employee?.id],
     enabled: !!employee?.id,
     queryFn: async () => (await supabase.rpc('get_employee_sensitive', { p_employee_id: employee!.id })).data?.[0] ?? null,
+  });
+
+  const qc = useQueryClient();
+  const consents = useQuery({ queryKey: ['consents', user?.id], queryFn: () => getConsents(supabase, user!.id), enabled: !!user });
+  const setConsent = useMutation({
+    mutationFn: ({ type, granted }: { type: 'location_tracking' | 'call_recording'; granted: boolean }) => recordConsent(supabase, user!.id, type, granted),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['consents'] }),
   });
 
   if (!user) return null;
@@ -102,7 +114,7 @@ export default function Profile() {
         {[
           { icon: Globe, label: 'Language', value: LOCALES.find((l) => l.code === locale)?.nativeLabel, onPress: cycleLanguage },
           { icon: Moon, label: 'Appearance', value: preference[0]!.toUpperCase() + preference.slice(1), onPress: cycleTheme },
-          { icon: ShieldCheck, label: 'Privacy notice', value: 'v2026.1', onPress: () => Linking.openURL('https://example.com/privacy') },
+          { icon: ShieldCheck, label: 'Privacy notice', value: 'v2026.1', onPress: () => router.push('/work/policies') },
         ].map(({ icon: Icon, label, value, onPress }, i) => (
           <Pressable key={label} onPress={onPress} className={`min-h-tap flex-row items-center gap-3 px-4 py-3 ${i ? 'border-t border-border' : ''}`} accessibilityRole="button">
             <Icon size={20} color={colors.textMuted} />
@@ -110,6 +122,19 @@ export default function Profile() {
             <Text className="text-sm text-text-muted">{value}</Text>
             <ChevronRight size={18} color={colors.textSubtle} />
           </Pressable>
+        ))}
+      </Card>
+
+      <Card className="gap-3">
+        <Text weight="semibold" className="text-base">Privacy</Text>
+        {([
+          ['location_tracking', 'Location during work hours', 'Only while punched in, within your shift window'],
+          ['call_recording', 'Call recording', 'Only when you choose to record and inform the customer'],
+        ] as const).map(([type, label, hint]) => (
+          <View key={type} className="flex-row items-center gap-3">
+            <View className="flex-1"><Text weight="medium">{label}</Text><Text className="text-xs text-text-muted">{hint}</Text></View>
+            <Switch value={!!consents.data?.[type]} onValueChange={(v) => setConsent.mutate({ type, granted: v })} accessibilityLabel={label} />
+          </View>
         ))}
       </Card>
 

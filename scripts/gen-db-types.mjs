@@ -128,12 +128,17 @@ function relationships(table) {
     .join('\n')}\n${ind(5)}]`;
 }
 
+// NOT NULL columns that BEFORE INSERT triggers fill (human-friendly numbers) — optional on insert.
+const TRIGGER_FILLED = new Set([
+  'leads.lead_code', 'quotes.quote_no', 'deals.deal_no', 'invoices.invoice_no', 'receipts.receipt_no', 'requests.request_no',
+]);
+
 function tableBlock(name, { cols }, isView) {
   const row = cols.map((c) => `${ind(6)}${q(c.column_name)}: ${tsType(c)}${c.nullable ? ' | null' : ''}`).join('\n');
   const insert = cols
     .map((c) => {
       if (c.generated) return `${ind(6)}${q(c.column_name)}?: never`;
-      const opt = c.nullable || c.has_default || isView;
+      const opt = c.nullable || c.has_default || isView || TRIGGER_FILLED.has(`${name}.${c.column_name}`);
       return `${ind(6)}${q(c.column_name)}${opt ? '?' : ''}: ${tsType(c)}${c.nullable ? ' | null' : ''}`;
     })
     .join('\n');

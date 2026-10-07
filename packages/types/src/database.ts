@@ -775,7 +775,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            deal_no: string
+            deal_no?: string
             lead_id: string
             quote_id?: string | null
             package_id: string
@@ -1713,7 +1713,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            invoice_no: string
+            invoice_no?: string
             kind: Database["public"]["Enums"]["invoice_kind"]
             deal_id: string
             bill_to?: Json
@@ -1975,7 +1975,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            lead_code: string
+            lead_code?: string
             business_name: string
             contact_name?: string | null
             phone: string
@@ -3375,7 +3375,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            quote_no: string
+            quote_no?: string
             lead_id: string
             package_id: string
             created_by?: string
@@ -3535,7 +3535,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            receipt_no: string
+            receipt_no?: string
             payment_id: string
             amount: number
             issued_at?: string
@@ -3679,7 +3679,7 @@ export type Database = {
           Insert: {
             id?: string
             org_id?: string
-            request_no: string
+            request_no?: string
             type: Database["public"]["Enums"]["request_type"]
             user_id?: string | null
             is_anonymous?: boolean

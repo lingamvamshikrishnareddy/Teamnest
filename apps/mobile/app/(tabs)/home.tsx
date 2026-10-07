@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +10,7 @@ import {
 import { getMonthSummary, getTodayAttendance, getUnreadCount, qk } from '@teamnest/api-client';
 import { formatDate, formatINR, formatNumber, formatPercent, formatTime, greetingKey, istMonthStart, type TranslationKey } from '@teamnest/ui';
 import { Card } from '@/components/card';
+import { HomeSection, TeamWins } from '@/components/home-sections';
 import { KpiTile } from '@/components/kpi-tile';
 import { Text } from '@/components/text';
 import { supabase } from '@/lib/supabase';
@@ -75,10 +77,10 @@ export default function Home() {
               <Text className="text-sm text-on-header opacity-75">· {formatDate(new Date())}</Text>
             </View>
           </View>
-          <Pressable className="size-11 items-center justify-center rounded-full bg-white/15" accessibilityRole="button" accessibilityLabel="Scan visiting card or QR" hitSlop={4}>
+          <Pressable onPress={() => router.push('/work/id-card')} className="size-11 items-center justify-center rounded-full bg-white/15" accessibilityRole="button" accessibilityLabel="My visiting card and QR" hitSlop={4}>
             <ScanLine size={20} color="#FFFFFF" />
           </Pressable>
-          <Pressable className="size-11 items-center justify-center rounded-full bg-white/15" accessibilityRole="button" accessibilityLabel={`Notifications, ${unread.data ?? 0} unread`} hitSlop={4}>
+          <Pressable onPress={() => router.push('/notifications')} className="size-11 items-center justify-center rounded-full bg-white/15" accessibilityRole="button" accessibilityLabel={`Notifications, ${unread.data ?? 0} unread`} hitSlop={4}>
             <Bell size={20} color="#FFFFFF" />
             {!!unread.data && (
               <View className="absolute right-1.5 top-1.5 min-w-4 items-center rounded-full bg-highlight px-1">
@@ -126,10 +128,7 @@ export default function Home() {
         </ScrollView>
 
         {tab !== 'home.monthSummary' ? (
-          <View className="mx-4 items-center rounded-card border border-dashed border-border-strong bg-surface px-6 py-10">
-            <Text weight="semibold" className="text-base">{t(tab)}</Text>
-            <Text className="mt-1 text-center text-sm text-text-muted">This list arrives in Phase 2 — the data is already flowing.</Text>
-          </View>
+          <HomeSection tab={tab} userId={userId} />
         ) : (
           <View className="gap-4 px-4">
             {/* Revenue hero */}
@@ -166,11 +165,11 @@ export default function Home() {
             {/* Shortcuts */}
             <View className="flex-row gap-3">
               {[
-                { icon: Trophy, label: 'Incentives' },
-                { icon: Lightbulb, label: 'Insights' },
-                { icon: PackageOpen, label: 'Unsold Packages' },
-              ].map(({ icon: I, label }) => (
-                <Pressable key={label} className="min-h-tap flex-1 items-center gap-1.5 rounded-card bg-surface py-3" accessibilityRole="button">
+                { icon: Trophy, label: 'Incentives', go: () => router.push('/work/incentives') },
+                { icon: Lightbulb, label: 'Insights', go: () => setTab('home.reports') },
+                { icon: PackageOpen, label: 'Unsold Packages', go: () => router.push('/leads?chip=all') },
+              ].map(({ icon: I, label, go }) => (
+                <Pressable key={label} onPress={go} className="min-h-tap flex-1 items-center gap-1.5 rounded-card bg-surface py-3" accessibilityRole="button">
                   <View className="size-10 items-center justify-center rounded-full bg-primary-soft"><I size={18} color={colors.primaryText} /></View>
                   <Text weight="medium" className="text-xs">{label}</Text>
                 </Pressable>
@@ -190,6 +189,7 @@ export default function Home() {
                 </Pressable>
               </View>
             )}
+            <View className="-mx-4"><TeamWins /></View>
           </View>
         )}
       </ScrollView>

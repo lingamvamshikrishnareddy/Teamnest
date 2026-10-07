@@ -7,3 +7,7 @@ export * from './queries/approvals';
 export * from './queries/attendance';
 export * from './queries/notifications';
 export * from './queries/payments';
+export * from './queries/leads';
+export * from './queries/activity';
+export * from './queries/sales';
+export * from './queries/hr';
